@@ -1,0 +1,6 @@
+<Solution>
+  <Project Path="BairroEmDia.Api/BairroEmDia.Api.csproj" />
+  <Project Path="BairroEmDia.Domain/BairroEmDia.Domain.csproj" />
+  <Project Path="BairroEmDia.Infrastructure/BairroEmDia.Infrastructure.csproj" />
+  <Project Path="BairroEmDia.Tests/BairroEmDia.Tests.csproj" />
+</Solution>

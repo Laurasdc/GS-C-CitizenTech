@@ -1,0 +1,11 @@
+D:\laura\Documentos\FIAP\C#\GS CitizenTech\BairroEmDia\BairroEmDia.Domain\bin\Debug\net10.0\BairroEmDia.Domain.deps.json
+D:\laura\Documentos\FIAP\C#\GS CitizenTech\BairroEmDia\BairroEmDia.Domain\bin\Debug\net10.0\BairroEmDia.Domain.dll
+D:\laura\Documentos\FIAP\C#\GS CitizenTech\BairroEmDia\BairroEmDia.Domain\bin\Debug\net10.0\BairroEmDia.Domain.pdb
+D:\laura\Documentos\FIAP\C#\GS CitizenTech\BairroEmDia\BairroEmDia.Domain\obj\Debug\net10.0\BairroEmDia.Domain.GeneratedMSBuildEditorConfig.editorconfig
+D:\laura\Documentos\FIAP\C#\GS CitizenTech\BairroEmDia\BairroEmDia.Domain\obj\Debug\net10.0\BairroEmDia.Domain.AssemblyInfoInputs.cache
+D:\laura\Documentos\FIAP\C#\GS CitizenTech\BairroEmDia\BairroEmDia.Domain\obj\Debug\net10.0\BairroEmDia.Domain.AssemblyInfo.cs
+D:\laura\Documentos\FIAP\C#\GS CitizenTech\BairroEmDia\BairroEmDia.Domain\obj\Debug\net10.0\BairroEmDia.Domain.csproj.CoreCompileInputs.cache
+D:\laura\Documentos\FIAP\C#\GS CitizenTech\BairroEmDia\BairroEmDia.Domain\obj\Debug\net10.0\BairroEmDia.Domain.dll
+D:\laura\Documentos\FIAP\C#\GS CitizenTech\BairroEmDia\BairroEmDia.Domain\obj\Debug\net10.0\refint\BairroEmDia.Domain.dll
+D:\laura\Documentos\FIAP\C#\GS CitizenTech\BairroEmDia\BairroEmDia.Domain\obj\Debug\net10.0\BairroEmDia.Domain.pdb
+D:\laura\Documentos\FIAP\C#\GS CitizenTech\BairroEmDia\BairroEmDia.Domain\obj\Debug\net10.0\ref\BairroEmDia.Domain.dll

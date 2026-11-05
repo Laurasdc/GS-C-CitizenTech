@@ -1,0 +1,15 @@
+D:\laura\Documentos\FIAP\C#\GS CitizenTech\BairroEmDia\BairroEmDia.Infrastructure\bin\Debug\net10.0\BairroEmDia.Infrastructure.deps.json
+D:\laura\Documentos\FIAP\C#\GS CitizenTech\BairroEmDia\BairroEmDia.Infrastructure\bin\Debug\net10.0\BairroEmDia.Infrastructure.dll
+D:\laura\Documentos\FIAP\C#\GS CitizenTech\BairroEmDia\BairroEmDia.Infrastructure\bin\Debug\net10.0\BairroEmDia.Infrastructure.pdb
+D:\laura\Documentos\FIAP\C#\GS CitizenTech\BairroEmDia\BairroEmDia.Infrastructure\bin\Debug\net10.0\BairroEmDia.Domain.dll
+D:\laura\Documentos\FIAP\C#\GS CitizenTech\BairroEmDia\BairroEmDia.Infrastructure\bin\Debug\net10.0\BairroEmDia.Domain.pdb
+D:\laura\Documentos\FIAP\C#\GS CitizenTech\BairroEmDia\BairroEmDia.Infrastructure\obj\Debug\net10.0\BairroEmDia.Infrastructure.csproj.AssemblyReference.cache
+D:\laura\Documentos\FIAP\C#\GS CitizenTech\BairroEmDia\BairroEmDia.Infrastructure\obj\Debug\net10.0\BairroEmDia.Infrastructure.GeneratedMSBuildEditorConfig.editorconfig
+D:\laura\Documentos\FIAP\C#\GS CitizenTech\BairroEmDia\BairroEmDia.Infrastructure\obj\Debug\net10.0\BairroEmDia.Infrastructure.AssemblyInfoInputs.cache
+D:\laura\Documentos\FIAP\C#\GS CitizenTech\BairroEmDia\BairroEmDia.Infrastructure\obj\Debug\net10.0\BairroEmDia.Infrastructure.AssemblyInfo.cs
+D:\laura\Documentos\FIAP\C#\GS CitizenTech\BairroEmDia\BairroEmDia.Infrastructure\obj\Debug\net10.0\BairroEmDia.Infrastructure.csproj.CoreCompileInputs.cache
+D:\laura\Documentos\FIAP\C#\GS CitizenTech\BairroEmDia\BairroEmDia.Infrastructure\obj\Debug\net10.0\BairroEm.CA6ED563.Up2Date
+D:\laura\Documentos\FIAP\C#\GS CitizenTech\BairroEmDia\BairroEmDia.Infrastructure\obj\Debug\net10.0\BairroEmDia.Infrastructure.dll
+D:\laura\Documentos\FIAP\C#\GS CitizenTech\BairroEmDia\BairroEmDia.Infrastructure\obj\Debug\net10.0\refint\BairroEmDia.Infrastructure.dll
+D:\laura\Documentos\FIAP\C#\GS CitizenTech\BairroEmDia\BairroEmDia.Infrastructure\obj\Debug\net10.0\BairroEmDia.Infrastructure.pdb
+D:\laura\Documentos\FIAP\C#\GS CitizenTech\BairroEmDia\BairroEmDia.Infrastructure\obj\Debug\net10.0\ref\BairroEmDia.Infrastructure.dll
