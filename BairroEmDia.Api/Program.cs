@@ -35,6 +35,7 @@ builder.Services.AddScoped<IOcorrenciaRepository, OcorrenciaRepository>();
 
 builder.Services.AddScoped<IUsuarioService, UsuarioService>();
 builder.Services.AddScoped<IOcorrenciaService, OcorrenciaService>();
+builder.Services.AddScoped<IIndicadoresService, IndicadoresService>();
 
 var app = builder.Build();
 
