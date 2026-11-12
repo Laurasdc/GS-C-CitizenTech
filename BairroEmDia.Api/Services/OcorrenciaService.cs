@@ -29,7 +29,9 @@ public class OcorrenciaService : IOcorrenciaService
             request.Descricao,
             request.Bairro,
             request.Localizacao,
-            request.Categoria);
+            request.Categoria,
+            request.Cidade,
+            request.Uf);
 
         await ValidarUsuarioAsync(
             request.UsuarioId,
@@ -57,6 +59,8 @@ public class OcorrenciaService : IOcorrenciaService
         string? bairro = null,
         CategoriaOcorrencia? categoria = null,
         StatusOcorrencia? status = null,
+        string? cidade = null,
+        string? uf = null,
         CancellationToken cancellationToken = default)
     {
         if (categoria.HasValue &&
@@ -81,6 +85,8 @@ public class OcorrenciaService : IOcorrenciaService
             bairro,
             categoria,
             status,
+            cidade,
+            uf,
             cancellationToken);
 
         return ocorrencias
@@ -88,6 +94,8 @@ public class OcorrenciaService : IOcorrenciaService
                 ocorrencia.Id,
                 ocorrencia.Titulo,
                 ocorrencia.Bairro,
+                ocorrencia.Cidade,
+                ocorrencia.Uf,
                 ocorrencia.Categoria,
                 ocorrencia.Status,
                 ocorrencia.CriadoEm,
@@ -109,7 +117,9 @@ public class OcorrenciaService : IOcorrenciaService
             request.Descricao,
             request.Bairro,
             request.Localizacao,
-            request.Categoria);
+            request.Categoria,
+            request.Cidade,
+            request.Uf);
 
         await _ocorrenciaRepository.SalvarAlteracoesAsync(
             cancellationToken);
@@ -210,6 +220,8 @@ public class OcorrenciaService : IOcorrenciaService
             ocorrencia.Titulo,
             ocorrencia.Descricao,
             ocorrencia.Bairro,
+            ocorrencia.Cidade,
+            ocorrencia.Uf,
             ocorrencia.Localizacao,
             ocorrencia.Categoria,
             ocorrencia.Status,

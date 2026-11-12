@@ -17,6 +17,8 @@ public interface IOcorrenciaService
         string? bairro = null,
         CategoriaOcorrencia? categoria = null,
         StatusOcorrencia? status = null,
+        string? cidade = null,
+        string? uf = null,
         CancellationToken cancellationToken = default);
 
     Task<OcorrenciaDetalheResponse> EditarAsync(

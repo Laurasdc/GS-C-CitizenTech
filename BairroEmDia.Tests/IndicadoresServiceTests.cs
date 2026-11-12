@@ -44,6 +44,8 @@ public class IndicadoresServiceTests
                 "Chácara Klabin",
                 null,
                 null,
+                null,
+                null,
                 It.IsAny<CancellationToken>()))
             .ReturnsAsync(ocorrencias);
 
@@ -96,6 +98,8 @@ public class IndicadoresServiceTests
                 null,
                 null,
                 null,
+                null,
+                null,
                 It.IsAny<CancellationToken>()))
             .ReturnsAsync(Array.Empty<Ocorrencia>());
 
@@ -139,6 +143,8 @@ public class IndicadoresServiceTests
                 "Chácara Klabin",
                 null,
                 null,
+                null,
+                null,
                 It.IsAny<CancellationToken>()))
             .ReturnsAsync(Array.Empty<Ocorrencia>());
 
@@ -156,6 +162,8 @@ public class IndicadoresServiceTests
                 "Chácara Klabin",
                 null,
                 null,
+                null,
+                null,
                 It.IsAny<CancellationToken>()),
             Times.Once);
     }
@@ -169,6 +177,6 @@ public class IndicadoresServiceTests
             "Descrição do problema observado.",
             "Chácara Klabin",
             "Rua de demonstração, número 100",
-            categoria);
+            categoria, "São Paulo", "SP");
     }
 }

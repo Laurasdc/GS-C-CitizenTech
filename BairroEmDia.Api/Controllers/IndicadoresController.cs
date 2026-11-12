@@ -22,10 +22,14 @@ public class IndicadoresController : ControllerBase
         StatusCodes.Status200OK)]
     public async Task<ActionResult<IndicadoresResponse>> Obter(
         [FromQuery] string? bairro = null,
+        string? cidade = null,
+        string? uf = null,
         CancellationToken cancellationToken = default)
     {
         var indicadores = await _indicadoresService.ObterAsync(
             bairro,
+            cidade,
+            uf,
             cancellationToken);
 
         return Ok(indicadores);

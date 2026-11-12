@@ -1,5 +1,6 @@
 using BairroEmDia.Api.DTOs;
 using BairroEmDia.Domain.Enums;
+using BairroEmDia.Domain.Entities;
 using BairroEmDia.Domain.Interfaces;
 
 namespace BairroEmDia.Api.Services;
@@ -16,14 +17,22 @@ public class IndicadoresService : IIndicadoresService
 
     public async Task<IndicadoresResponse> ObterAsync(
         string? bairro = null,
+        string? cidade = null,
+        string? uf = null,
         CancellationToken cancellationToken = default)
     {
         var bairroFiltrado = string.IsNullOrWhiteSpace(bairro)
             ? null
             : bairro.Trim();
 
+        var cidadeFiltrada = Localidade.NormalizarFiltro(cidade);
+        var ufFiltrada = Localidade.NormalizarFiltro(uf)?.ToUpperInvariant();
+        if (ufFiltrada is not null) Localidade.ValidarUf(ufFiltrada);
+
         var ocorrencias = await _ocorrenciaRepository.ListarAsync(
             bairro: bairroFiltrado,
+            cidade: cidadeFiltrada,
+            uf: ufFiltrada,
             cancellationToken: cancellationToken);
 
         var encerradas = ocorrencias.Count(ocorrencia =>
@@ -50,6 +59,8 @@ public class IndicadoresService : IIndicadoresService
 
         return new IndicadoresResponse(
             bairroFiltrado,
+            cidadeFiltrada,
+            ufFiltrada,
             ocorrencias.Count,
             ocorrencias.Count - encerradas,
             encerradas,

@@ -17,7 +17,7 @@ Desenvolvido em C# para a Global Solution CitizenTech — Engenharia de Software
 
 O Bairro em Dia organiza relatos de moradores em um histórico compartilhado de acompanhamento. O cidadão registra um problema, outros moradores podem confirmar que também são afetados e uma associação de moradores representa o responsável pelo acompanhamento das ocorrências no cenário do protótipo.
 
-O recorte de demonstração é o bairro Chácara Klabin, em São Paulo. A API permite cadastrar outros bairros por meio de um campo textual.
+A API permite registrar ocorrências em bairros de qualquer cidade do Brasil, identificando UF, cidade, bairro e localização. Chácara Klabin, em São Paulo/SP, é apenas um exemplo de demonstração. A UF é validada; nomes de cidades e bairros são textuais, sem validação de existência em um catálogo oficial nesta versão.
 
 | Ficha da CitizenTech    | Descrição                                                                                                                             |
 | ----------------------- | ------------------------------------------------------------------------------------------------------------------------------------- |
@@ -36,12 +36,12 @@ O projeto é um protótipo acadêmico com usuários e ocorrências fictícios. O
 
 - Cadastro, listagem e consulta de usuários.
 - Cadastro e consulta detalhada de ocorrências.
-- Listagem de ocorrências com filtros opcionais por bairro, categoria e status.
+- Listagem de ocorrências com filtros opcionais por UF, cidade, bairro, categoria e status.
 - Edição dos dados de ocorrências abertas.
 - Alteração de status com justificativa e histórico cronológico.
 - Encerramento e reabertura de ocorrências.
 - Confirmação por outros moradores, com bloqueio de confirmação própria e duplicada.
-- Indicadores gerais ou filtrados por bairro.
+- Indicadores gerais ou filtrados por UF, cidade e bairro.
 - Persistência em SQLite com migrations do EF Core.
 - Documentação OpenAPI e interface interativa Scalar.
 - Tratamento centralizado de exceções e testes automatizados.
@@ -67,8 +67,8 @@ Nos corpos JSON, utilize os nomes dos enums. Nos filtros apresentados pelo Scala
 ## Regras de negócio
 
 - Toda ocorrência começa como `Registrada` e deve estar vinculada a um usuário existente.
-- Título, descrição, bairro, localização e categoria devem ser válidos.
-- Limites: título de 120 caracteres, descrição de 2.000, bairro de 100 e localização de 250.
+- Título, descrição, cidade, UF, bairro, localização e categoria devem ser válidos. A UF é normalizada para letras maiúsculas e deve pertencer às 27 unidades federativas brasileiras.
+- Limites: título de 120 caracteres, descrição de 2.000, cidade de 100, UF de 2, bairro de 100 e localização de 250.
 - Toda mudança de status exige justificativa de até 1.000 caracteres e gera um histórico com status anterior, novo status e data.
 - Não é permitido alterar para o mesmo status atual.
 - Uma ocorrência encerrada não pode ter seus dados editados.
@@ -125,7 +125,7 @@ dotnet tool restore
 dotnet ef database update --project BairroEmDia.Infrastructure --startup-project BairroEmDia.Api
 ```
 
-O repositório já inclui a migration inicial; não é necessário gerá-la novamente. O comando cria o banco e aplica o esquema. Um banco novo começa sem usuários ou ocorrências.
+O repositório inclui a migration inicial e `AdicionaCidadeEUf`; não é necessário gerá-las novamente. Esta última preenche os registros antigos de demonstração como São Paulo/SP, preservando seus IDs e dados. O comando cria o banco e aplica o esquema. Um banco novo começa sem usuários ou ocorrências.
 
 A conexão está em `BairroEmDia.Api/appsettings.json`:
 
@@ -169,7 +169,7 @@ A raiz da API não possui página própria. A documentação está em `/scalar` 
 Exemplo de filtro:
 
 ```text
-GET /api/ocorrencias?bairro=Ch%C3%A1cara%20Klabin&categoria=1&status=2
+GET /api/ocorrencias?uf=SP&cidade=S%C3%A3o%20Paulo&bairro=Ch%C3%A1cara%20Klabin&categoria=1&status=2
 ```
 
 Respostas principais: `200` para consultas e atualizações, `201` para criação de usuário ou ocorrência, `400` para dados inválidos ou regras recusadas e `404` para recursos não encontrados. Listagens sem resultados retornam `200` com `[]`.
@@ -197,6 +197,8 @@ Em `POST /api/ocorrencias`, envie:
   "usuarioId": "11111111-1111-1111-1111-111111111111",
   "titulo": "Poste apagado próximo ao ponto de ônibus",
   "descricao": "A iluminação está apagada durante a noite.",
+  "cidade": "São Paulo",
+  "uf": "SP",
   "bairro": "Chácara Klabin",
   "localizacao": "Rua de demonstração, próximo ao número 100",
   "categoria": "Iluminacao"
@@ -238,7 +240,7 @@ Execute:
 dotnet test
 ```
 
-Na execução de desenvolvimento registrada em 08/11/2026, os **24 testes passaram, sem falhas**. A suíte cobre criação e validação de ocorrências, mudanças de status, histórico, encerramento, reabertura, confirmações e decisões de consulta/persistência dos serviços. Os testes de indicadores conferem os totais, o cenário vazio e o repasse do filtro de bairro.
+Na execução da atualização de localidades em 12/11/2026, os **32 testes passaram, sem falhas**, incluindo validação de UF/cidade, filtros em SQLite real e preservação dos registros antigos pela migration. A suíte cobre criação e validação de ocorrências, mudanças de status, histórico, encerramento, reabertura, confirmações e decisões de consulta/persistência dos serviços. Os testes de indicadores conferem os totais, o cenário vazio e o repasse do filtro de bairro.
 
 Os testes de serviços utilizam repositórios simulados com Moq; não acessam um banco real.
 
@@ -268,6 +270,12 @@ A proposta foi contextualizada por pesquisa documental em fontes públicas. Não
 - O [ODS 11, apresentado pelas Nações Unidas no Brasil](https://brasil.un.org/pt-br/sdgs/11), trata de cidades inclusivas e sustentáveis. A proposta se relaciona à participação na gestão urbana (meta 11.3) e à atenção aos espaços públicos seguros e acessíveis (meta 11.7), ao organizar relatos e seu acompanhamento comunitário.
 
 Fontes consultadas em 08/11/2026. Elas fundamentam o contexto e a proposta; não comprovam demanda local ou impacto efetivamente obtido pelo aplicativo.
+
+## Localidades e filtros
+
+Os endpoints `GET /api/ocorrencias` e `GET /api/indicadores` aceitam `uf`, `cidade` e `bairro` opcionais. Omitir um campo amplia a consulta: apenas `uf=SP` consulta todo o estado, enquanto `uf=SP&cidade=Campinas` consulta a cidade inteira. Para consultar um bairro específico sem misturar nomes iguais, informe os três campos.
+
+Cidade e bairro são comparados pelo nome completo. A comparação SQLite `NOCASE` cobre diferenças de caixa em ASCII; não remove acentos nem unifica variantes de escrita. Use os mesmos acentos do cadastro. UF inválida retorna `400`. Novos cadastros e edições exigem `cidade` e `uf` no JSON. A atualização do seletor de localidades no Mobile será feita na etapa seguinte.
 
 ## Integração Mobile e próximos passos
 

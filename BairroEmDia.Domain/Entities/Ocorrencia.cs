@@ -13,6 +13,8 @@ public class Ocorrencia
 
     public string Titulo { get; private set; } = string.Empty;
     public string Descricao { get; private set; } = string.Empty;
+    public string Cidade { get; private set; } = string.Empty;
+    public string Uf { get; private set; } = string.Empty;
     public string Bairro { get; private set; } = string.Empty;
     public string Localizacao { get; private set; } = string.Empty;
 
@@ -38,18 +40,22 @@ public class Ocorrencia
         string descricao,
         string bairro,
         string localizacao,
-        CategoriaOcorrencia categoria)
+        CategoriaOcorrencia categoria,
+        string cidade,
+        string uf)
     {
         if (usuarioId == Guid.Empty)
             throw new RegraDeNegocioException(
                 "O usuário responsável é obrigatório.");
 
-        ValidarDados(titulo, descricao, bairro, localizacao, categoria);
+        ValidarDados(titulo, descricao, bairro, localizacao, categoria, cidade, uf);
 
         Id = Guid.NewGuid();
         UsuarioId = usuarioId;
         Titulo = titulo.Trim();
         Descricao = descricao.Trim();
+        Cidade = cidade.Trim();
+        Uf = uf.Trim().ToUpperInvariant();
         Bairro = bairro.Trim();
         Localizacao = localizacao.Trim();
         Categoria = categoria;
@@ -63,16 +69,20 @@ public class Ocorrencia
         string descricao,
         string bairro,
         string localizacao,
-        CategoriaOcorrencia categoria)
+        CategoriaOcorrencia categoria,
+        string cidade,
+        string uf)
     {
         if (Status == StatusOcorrencia.Encerrada)
             throw new RegraDeNegocioException(
                 "Uma ocorrência encerrada não pode ser editada.");
 
-        ValidarDados(titulo, descricao, bairro, localizacao, categoria);
+        ValidarDados(titulo, descricao, bairro, localizacao, categoria, cidade, uf);
 
         Titulo = titulo.Trim();
         Descricao = descricao.Trim();
+        Cidade = cidade.Trim();
+        Uf = uf.Trim().ToUpperInvariant();
         Bairro = bairro.Trim();
         Localizacao = localizacao.Trim();
         Categoria = categoria;
@@ -134,8 +144,12 @@ public class Ocorrencia
         string descricao,
         string bairro,
         string localizacao,
-        CategoriaOcorrencia categoria)
+        CategoriaOcorrencia categoria,
+        string cidade,
+        string uf)
     {
+        ValidarTexto(cidade, "A cidade", 100);
+        Localidade.ValidarUf(uf);
         ValidarTexto(titulo, "O título", 120);
         ValidarTexto(descricao, "A descrição", 2000);
         ValidarTexto(bairro, "O bairro", 100);

@@ -59,12 +59,16 @@ public class OcorrenciasController : ControllerBase
         [FromQuery] string? bairro = null,
         [FromQuery] CategoriaOcorrencia? categoria = null,
         [FromQuery] StatusOcorrencia? status = null,
+        string? cidade = null,
+        string? uf = null,
         CancellationToken cancellationToken = default)
     {
         var ocorrencias = await _ocorrenciaService.ListarAsync(
             bairro,
             categoria,
             status,
+            cidade,
+            uf,
             cancellationToken);
 
         return Ok(ocorrencias);

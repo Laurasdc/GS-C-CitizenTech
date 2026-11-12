@@ -56,6 +56,9 @@ public class BairroEmDiaDbContext : DbContext
                 .IsRequired()
                 .HasMaxLength(2000);
 
+            entity.Property(o => o.Cidade).IsRequired().HasMaxLength(100);
+            entity.Property(o => o.Uf).IsRequired().HasMaxLength(2);
+
             entity.Property(o => o.Bairro)
                 .IsRequired()
                 .HasMaxLength(100);
@@ -105,6 +108,7 @@ public class BairroEmDiaDbContext : DbContext
 
             entity.HasIndex(o => new { o.Bairro, o.Status });
             entity.HasIndex(o => o.Categoria);
+            entity.HasIndex(o => new { o.Uf, o.Cidade, o.Bairro, o.Status });
         });
 
         modelBuilder.Entity<Confirmacao>(entity =>

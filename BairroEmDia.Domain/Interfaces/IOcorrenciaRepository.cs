@@ -13,6 +13,8 @@ public interface IOcorrenciaRepository
         string? bairro = null,
         CategoriaOcorrencia? categoria = null,
         StatusOcorrencia? status = null,
+        string? cidade = null,
+        string? uf = null,
         CancellationToken cancellationToken = default);
 
     Task AdicionarAsync(

@@ -32,11 +32,27 @@ public class OcorrenciaRepository : IOcorrenciaRepository
         string? bairro = null,
         CategoriaOcorrencia? categoria = null,
         StatusOcorrencia? status = null,
+        string? cidade = null,
+        string? uf = null,
         CancellationToken cancellationToken = default)
     {
         var consulta = _context.Ocorrencias
             .AsNoTracking()
             .AsQueryable();
+
+        var cidadeFiltrada = Localidade.NormalizarFiltro(cidade);
+        var ufFiltrada = Localidade.NormalizarFiltro(uf);
+
+        if (ufFiltrada is not null)
+        {
+            Localidade.ValidarUf(ufFiltrada);
+            ufFiltrada = ufFiltrada.ToUpperInvariant();
+            consulta = consulta.Where(o => o.Uf == ufFiltrada);
+        }
+
+        if (cidadeFiltrada is not null)
+            consulta = consulta.Where(o =>
+                EF.Functions.Collate(o.Cidade, "NOCASE") == cidadeFiltrada);
 
         if (!string.IsNullOrWhiteSpace(bairro))
         {

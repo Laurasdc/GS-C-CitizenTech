@@ -4,6 +4,8 @@ namespace BairroEmDia.Api.DTOs;
 
 public record IndicadoresResponse(
     string? Bairro,
+    string? Cidade,
+    string? Uf,
     int TotalOcorrencias,
     int OcorrenciasAbertas,
     int OcorrenciasEncerradas,

@@ -15,6 +15,14 @@ public class CriarOcorrenciaRequest
     [StringLength(2000)]
     public string Descricao { get; set; } = string.Empty;
 
+    [Required(ErrorMessage = "A cidade é obrigatória.")]
+    [StringLength(100)]
+    public string Cidade { get; set; } = string.Empty;
+
+    [Required(ErrorMessage = "A UF é obrigatória.")]
+    [StringLength(2, MinimumLength = 2)]
+    public string Uf { get; set; } = string.Empty;
+
     [Required(ErrorMessage = "O bairro é obrigatório.")]
     [StringLength(100)]
     public string Bairro { get; set; } = string.Empty;

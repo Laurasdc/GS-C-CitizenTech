@@ -225,6 +225,8 @@ public class OcorrenciaServiceTests
             UsuarioId = usuarioId,
             Titulo = "Poste apagado",
             Descricao = "Iluminação apagada próximo ao ponto de ônibus.",
+            Cidade = "São Paulo",
+            Uf = "SP",
             Bairro = "Chácara Klabin",
             Localizacao = "Rua de demonstração, número 100",
             Categoria = CategoriaOcorrencia.Iluminacao
@@ -241,6 +243,6 @@ public class OcorrenciaServiceTests
             request.Descricao,
             request.Bairro,
             request.Localizacao,
-            request.Categoria);
+            request.Categoria, "São Paulo", "SP");
     }
 }

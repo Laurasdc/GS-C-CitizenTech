@@ -8,6 +8,8 @@ public record OcorrenciaDetalheResponse(
     string Titulo,
     string Descricao,
     string Bairro,
+    string Cidade,
+    string Uf,
     string Localizacao,
     CategoriaOcorrencia Categoria,
     StatusOcorrencia Status,

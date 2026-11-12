@@ -40,7 +40,7 @@ public class OcorrenciaTests
                 "Poste apagado próximo ao ponto de ônibus.",
                 "Centro",
                 "Rua Exemplo, próximo ao número 100",
-                CategoriaOcorrencia.Iluminacao));
+                CategoriaOcorrencia.Iluminacao, "São Paulo", "SP"));
 
         // Assert
         Assert.Equal(
@@ -62,7 +62,7 @@ public class OcorrenciaTests
                 "Poste apagado próximo ao ponto de ônibus.",
                 "Centro",
                 "Rua Exemplo, próximo ao número 100",
-                categoriaInvalida));
+                categoriaInvalida, "São Paulo", "SP"));
 
         // Assert
         Assert.Equal(
@@ -159,7 +159,7 @@ public class OcorrenciaTests
                 "Nova descrição",
                 "Outro bairro",
                 "Outro endereço",
-                CategoriaOcorrencia.Buraco));
+                CategoriaOcorrencia.Buraco, "São Paulo", "SP"));
 
         // Assert
         Assert.Equal(tituloAnterior, ocorrencia.Titulo);
@@ -186,7 +186,7 @@ public class OcorrenciaTests
             "A iluminação voltou a apresentar falha.",
             "Centro",
             "Rua Exemplo, próximo ao número 100",
-            CategoriaOcorrencia.Iluminacao);
+            CategoriaOcorrencia.Iluminacao, "São Paulo", "SP");
 
         // Assert
         Assert.Equal(StatusOcorrencia.EmAnalise, ocorrencia.Status);
@@ -295,6 +295,6 @@ public class OcorrenciaTests
             "Poste apagado próximo ao ponto de ônibus.",
             "Centro",
             "Rua Exemplo, próximo ao número 100",
-            CategoriaOcorrencia.Iluminacao);
+            CategoriaOcorrencia.Iluminacao, "São Paulo", "SP");
     }
 }

@@ -6,5 +6,7 @@ public interface IIndicadoresService
 {
     Task<IndicadoresResponse> ObterAsync(
         string? bairro = null,
+        string? cidade = null,
+        string? uf = null,
         CancellationToken cancellationToken = default);
 }
