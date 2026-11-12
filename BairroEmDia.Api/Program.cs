@@ -37,19 +37,39 @@ builder.Services.AddScoped<IUsuarioService, UsuarioService>();
 builder.Services.AddScoped<IOcorrenciaService, OcorrenciaService>();
 builder.Services.AddScoped<IIndicadoresService, IndicadoresService>();
 
+if (builder.Environment.IsDevelopment())
+{
+    builder.Services.AddCors(options =>
+    {
+        options.AddPolicy("ExpoWebLocal", policy =>
+        {
+            policy
+                .WithOrigins(
+                    "http://localhost:8081",
+                    "http://127.0.0.1:8081")
+                .AllowAnyHeader()
+                .AllowAnyMethod();
+        });
+    });
+}
+
 var app = builder.Build();
 
 app.UseExceptionHandler();
 
 if (app.Environment.IsDevelopment())
 {
+    app.UseCors("ExpoWebLocal");
+
     app.MapOpenApi();
 
     app.MapScalarApiReference(options =>
         options.WithTitle("Bairro em Dia — API"));
 }
-
-app.UseHttpsRedirection();
+else
+{
+    app.UseHttpsRedirection();
+}
 
 app.MapControllers();
 
