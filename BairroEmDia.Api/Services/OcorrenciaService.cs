@@ -146,6 +146,12 @@ public class OcorrenciaService : IOcorrenciaService
         return MapearDetalhe(ocorrencia);
     }
 
+    public async Task<bool> ConfirmouAsync(Guid id, Guid usuarioId, CancellationToken cancellationToken = default)
+    {
+        var ocorrencia = await BuscarOcorrenciaAsync(id, cancellationToken);
+        return ocorrencia.Confirmacoes.Any(c => c.UsuarioId == usuarioId);
+    }
+
     public async Task<OcorrenciaDetalheResponse> ConfirmarAsync(
         Guid id,
         ConfirmarOcorrenciaRequest request,

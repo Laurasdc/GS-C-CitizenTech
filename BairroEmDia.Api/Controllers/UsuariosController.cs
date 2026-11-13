@@ -1,9 +1,11 @@
 using BairroEmDia.Api.DTOs;
 using BairroEmDia.Api.Services;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Authorization;
 
 namespace BairroEmDia.Api.Controllers;
 
+[Authorize(Roles = "Gestor")]
 [ApiController]
 [Route("api/usuarios")]
 public class UsuariosController : ControllerBase

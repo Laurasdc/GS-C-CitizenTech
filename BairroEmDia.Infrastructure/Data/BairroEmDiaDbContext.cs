@@ -11,6 +11,9 @@ public class BairroEmDiaDbContext : DbContext
     {
     }
 
+    public DbSet<ContaUsuario> ContasUsuario => Set<ContaUsuario>();
+    public DbSet<SessaoUsuario> SessoesUsuario => Set<SessaoUsuario>();
+
     public DbSet<Usuario> Usuarios => Set<Usuario>();
     public DbSet<Ocorrencia> Ocorrencias => Set<Ocorrencia>();
     public DbSet<Confirmacao> Confirmacoes => Set<Confirmacao>();
@@ -21,6 +24,28 @@ public class BairroEmDiaDbContext : DbContext
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         base.OnModelCreating(modelBuilder);
+
+        modelBuilder.Entity<ContaUsuario>(entity =>
+        {
+            entity.ToTable("ContasUsuario");
+            entity.HasKey(c => c.UsuarioId);
+            entity.Property(c => c.UsuarioId).ValueGeneratedNever();
+            entity.Property(c => c.Email).IsRequired().HasMaxLength(254);
+            entity.HasIndex(c => c.Email).IsUnique();
+            entity.Property(c => c.SenhaHash).IsRequired().HasMaxLength(1024);
+            entity.Property(c => c.Perfil).IsRequired().HasMaxLength(30);
+            entity.HasOne<Usuario>().WithOne().HasForeignKey<ContaUsuario>(c => c.UsuarioId).OnDelete(DeleteBehavior.Cascade);
+        });
+        modelBuilder.Entity<SessaoUsuario>(entity =>
+        {
+            entity.ToTable("SessoesUsuario");
+            entity.HasKey(s => s.Id);
+            entity.Property(s => s.Id).ValueGeneratedNever();
+            entity.Property(s => s.TokenHash).IsRequired().HasMaxLength(64);
+            entity.HasIndex(s => s.TokenHash).IsUnique();
+            entity.HasIndex(s => s.ExpiraEm);
+            entity.HasOne<ContaUsuario>().WithMany().HasForeignKey(s => s.UsuarioId).OnDelete(DeleteBehavior.Cascade);
+        });
 
         modelBuilder.Entity<Usuario>(entity =>
         {

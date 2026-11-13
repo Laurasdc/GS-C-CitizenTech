@@ -5,6 +5,7 @@ namespace BairroEmDia.Api.DTOs;
 
 public class CriarOcorrenciaRequest
 {
+    [System.Text.Json.Serialization.JsonIgnore]
     public Guid UsuarioId { get; set; }
 
     [Required(ErrorMessage = "O título é obrigatório.")]

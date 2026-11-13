@@ -1,4 +1,6 @@
 using BairroEmDia.Domain.Exceptions;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Data.Sqlite;
 using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
 
@@ -21,6 +23,11 @@ public class ApiExceptionHandler : IExceptionHandler
     {
         var (status, titulo, detalhe) = exception switch
         {
+            DbUpdateException { InnerException: SqliteException { SqliteExtendedErrorCode: 2067 } } => (
+                StatusCodes.Status409Conflict,
+                "Registro já existente",
+                "Esta operação já foi registrada. Atualize a página antes de tentar novamente."),
+
             RecursoNaoEncontradoException => (
                 StatusCodes.Status404NotFound,
                 "Recurso não encontrado",

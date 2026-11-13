@@ -1,3 +1,5 @@
+using System.Security.Claims;
+using Microsoft.AspNetCore.Authorization;
 using BairroEmDia.Api.DTOs;
 using BairroEmDia.Api.Services;
 using BairroEmDia.Domain.Enums;
@@ -18,6 +20,7 @@ public class OcorrenciasController : ControllerBase
         _ocorrenciaService = ocorrenciaService;
     }
 
+    [Authorize]
     [HttpPost]
     [ProducesResponseType(
         typeof(OcorrenciaDetalheResponse),
@@ -26,6 +29,7 @@ public class OcorrenciasController : ControllerBase
         [FromBody] CriarOcorrenciaRequest request,
         CancellationToken cancellationToken)
     {
+        request.UsuarioId = Guid.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
         var ocorrencia = await _ocorrenciaService.CriarAsync(
             request,
             cancellationToken);
@@ -74,6 +78,7 @@ public class OcorrenciasController : ControllerBase
         return Ok(ocorrencias);
     }
 
+    [Authorize]
     [HttpPut("{id:guid}")]
     [ProducesResponseType(
         typeof(OcorrenciaDetalheResponse),
@@ -83,6 +88,8 @@ public class OcorrenciasController : ControllerBase
         [FromBody] EditarOcorrenciaRequest request,
         CancellationToken cancellationToken)
     {
+        var atual = await _ocorrenciaService.ObterPorIdAsync(id, cancellationToken);
+        if (atual.UsuarioId != Guid.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!) && !User.IsInRole("Gestor")) return Forbid();
         var ocorrencia = await _ocorrenciaService.EditarAsync(
             id,
             request,
@@ -91,6 +98,7 @@ public class OcorrenciasController : ControllerBase
         return Ok(ocorrencia);
     }
 
+    [Authorize(Roles = "Gestor")]
     [HttpPatch("{id:guid}/status")]
     [ProducesResponseType(
         typeof(OcorrenciaDetalheResponse),
@@ -108,15 +116,25 @@ public class OcorrenciasController : ControllerBase
         return Ok(ocorrencia);
     }
 
+    [Authorize]
+    [HttpGet("{id:guid}/minha-confirmacao")]
+    public async Task<IActionResult> MinhaConfirmacao(Guid id, CancellationToken cancellationToken)
+    {
+        var confirmada = await _ocorrenciaService.ConfirmouAsync(id,
+            Guid.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!), cancellationToken);
+        return Ok(new { confirmada });
+    }
+
+    [Authorize]
     [HttpPost("{id:guid}/confirmacoes")]
     [ProducesResponseType(
         typeof(OcorrenciaDetalheResponse),
         StatusCodes.Status200OK)]
     public async Task<ActionResult<OcorrenciaDetalheResponse>> Confirmar(
         Guid id,
-        [FromBody] ConfirmarOcorrenciaRequest request,
         CancellationToken cancellationToken)
     {
+        var request = new ConfirmarOcorrenciaRequest { UsuarioId = Guid.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!) };
         var ocorrencia = await _ocorrenciaService.ConfirmarAsync(
             id,
             request,

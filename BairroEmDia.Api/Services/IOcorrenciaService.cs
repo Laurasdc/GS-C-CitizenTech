@@ -31,6 +31,8 @@ public interface IOcorrenciaService
         AlterarStatusRequest request,
         CancellationToken cancellationToken = default);
 
+    Task<bool> ConfirmouAsync(Guid id, Guid usuarioId, CancellationToken cancellationToken = default);
+
     Task<OcorrenciaDetalheResponse> ConfirmarAsync(
         Guid id,
         ConfirmarOcorrenciaRequest request,

@@ -34,7 +34,8 @@ O projeto é um protótipo acadêmico com usuários e ocorrências fictícios. O
 
 ## Funcionalidades
 
-- Cadastro, listagem e consulta de usuários.
+- Cadastro de contas por nome, e-mail e senha; login e logout com sessão revogável.
+- Gestão de usuários restrita ao perfil Gestor.
 - Cadastro e consulta detalhada de ocorrências.
 - Listagem de ocorrências com filtros opcionais por UF, cidade, bairro, categoria e status.
 - Edição dos dados de ocorrências abertas.
@@ -125,7 +126,7 @@ dotnet tool restore
 dotnet ef database update --project BairroEmDia.Infrastructure --startup-project BairroEmDia.Api
 ```
 
-O repositório inclui a migration inicial e `AdicionaCidadeEUf`; não é necessário gerá-las novamente. Esta última preenche os registros antigos de demonstração como São Paulo/SP, preservando seus IDs e dados. O comando cria o banco e aplica o esquema. Um banco novo começa sem usuários ou ocorrências.
+O repositório inclui as migrations inicial, `AdicionaCidadeEUf` e `AdicionaAutenticacao`; não é necessário gerá-las novamente. A migration de localidades preserva os registros antigos como São Paulo/SP. A de autenticação adiciona as tabelas de contas e sessões sem apagar usuários ou ocorrências existentes. O comando cria o banco e aplica o esquema. Um banco novo começa sem usuários ou ocorrências.
 
 A conexão está em `BairroEmDia.Api/appsettings.json`:
 
@@ -151,86 +152,71 @@ Com o perfil atual:
 
 A raiz da API não possui página própria. A documentação está em `/scalar` e fica habilitada no ambiente `Development`. Se a porta for alterada, utilize o endereço exibido em `Now listening on:`. Para encerrar a execução, pressione `Ctrl+C`.
 
-## Endpoints
+## Autenticação e permissões
 
-| Método | Rota                                 | Operação                                               |
-| ------ | ------------------------------------ | ------------------------------------------------------ |
-| POST   | `/api/usuarios`                      | Cadastrar usuário.                                     |
-| GET    | `/api/usuarios`                      | Listar usuários.                                       |
-| GET    | `/api/usuarios/{id}`                 | Consultar usuário.                                     |
-| POST   | `/api/ocorrencias`                   | Cadastrar ocorrência.                                  |
-| GET    | `/api/ocorrencias`                   | Listar e filtrar ocorrências.                          |
-| GET    | `/api/ocorrencias/{id}`              | Consultar detalhes, histórico e total de confirmações. |
-| PUT    | `/api/ocorrencias/{id}`              | Editar dados da ocorrência.                            |
-| PATCH  | `/api/ocorrencias/{id}/status`       | Alterar status com justificativa.                      |
-| POST   | `/api/ocorrencias/{id}/confirmacoes` | Confirmar ocorrência com outro usuário.                |
-| GET    | `/api/indicadores`                   | Consultar indicadores gerais ou de um bairro.          |
+A consulta de ocorrências, detalhes e indicadores é pública. Para participar, crie uma conta em `POST /api/auth/registrar` e entre em `POST /api/auth/entrar`.
 
-Exemplo de filtro:
+- As senhas usam o `PasswordHasher` do ASP.NET Core Identity; a senha original não é salva.
+- Cada sessão possui um token aleatório de 256 bits. Somente o hash SHA-256 do token fica no SQLite.
+- A sessão expira em 8 horas, sem renovação automática. O logout revoga a sessão atual no servidor.
+- O navegador usa `POST /api/auth/entrar?usarCookie=true`: recebe cookie HttpOnly, com `SameSite=Lax`; o token não é devolvido no JSON. O app nativo usa `Authorization: Bearer <token>` e SecureStore.
+- Login e cadastro compartilham o limite de 10 solicitações por IP por minuto (429).
+- Requisições de escrita com cookie exigem uma origem autorizada; o CORS permite credenciais somente para origens explícitas.
+- O autor da ocorrência e da confirmação vem da sessão. Enviar outro `usuarioId` não altera a identidade.
+- Cadastros públicos recebem o perfil `Morador`. Edição é permitida ao autor ou Gestor. Alteração de status e gestão de usuários exigem `Gestor`.
+- O app não tem promoção pública de perfil, recuperação de senha, verificação de e-mail ou login social nesta etapa.
 
-```text
-GET /api/ocorrencias?uf=SP&cidade=S%C3%A3o%20Paulo&bairro=Ch%C3%A1cara%20Klabin&categoria=1&status=2
+Usuários antigos de demonstração continuam vinculados aos seus relatos, mas não ganham senhas automaticamente. Crie uma conta nova pelo app. Não existe senha padrão.
+
+### Endpoints
+
+| Método | Rota | Acesso / operação |
+| --- | --- | --- |
+| POST | `/api/auth/registrar` | Público: criar conta com nome, e-mail e senha. |
+| POST | `/api/auth/entrar` | Público: iniciar sessão. |
+| GET | `/api/auth/me` | Autenticado: consultar sua própria conta. |
+| POST | `/api/auth/sair` | Autenticado: revogar a sessão atual. |
+| GET | `/api/ocorrencias` | Público: listar e filtrar. |
+| GET | `/api/ocorrencias/{id}` | Público: detalhes e histórico. |
+| POST | `/api/ocorrencias` | Autenticado: registrar em seu próprio nome. |
+| PUT | `/api/ocorrencias/{id}` | Autor ou Gestor: editar. |
+| PATCH | `/api/ocorrencias/{id}/status` | Gestor: alterar status com justificativa. |
+| POST | `/api/ocorrencias/{id}/confirmacoes` | Autenticado: confirmar, sem corpo e sem `usuarioId`. |
+| GET | `/api/ocorrencias/{id}/minha-confirmacao` | Autenticado: verificar sua confirmação. |
+| GET | `/api/indicadores` | Público: indicadores e filtros. |
+| POST / GET | `/api/usuarios` | Gestor: operações de usuários de demonstração. |
+| GET | `/api/usuarios/{id}` | Gestor: consultar usuário. |
+
+Respostas: 400 (validação/regra de negócio), 401 (sessão ausente, inválida ou expirada), 403 (permissão/origem recusada), 404 (não encontrado), 409 (duplicidade) e 429 (limite de tentativas).
+
+### Exemplo para cliente nativo ou ferramenta HTTP
+
+Em `POST /api/auth/registrar`:
+
+```json
+{ "nome": "Moradora de Teste", "email": "moradora@example.com", "senha": "UmaSenhaDeTeste123!" }
 ```
 
-Respostas principais: `200` para consultas e atualizações, `201` para criação de usuário ou ocorrência, `400` para dados inválidos ou regras recusadas e `404` para recursos não encontrados. Listagens sem resultados retornam `200` com `[]`.
+Entre em `POST /api/auth/entrar` com e-mail e senha. Use o `token` retornado no cabeçalho `Authorization: Bearer <token>` nas chamadas autenticadas. O token é opaco, não é um JWT.
 
-## Exemplo de uso pelo Scalar
-
-### 1. Cadastrar um usuário
-
-Em `POST /api/usuarios`, envie:
+Em `POST /api/ocorrencias`:
 
 ```json
 {
-  "nome": "Moradora de Teste"
-}
-```
-
-Copie o `id` retornado. No exemplo seguinte, substitua o GUID ilustrativo pelo ID real desse usuário.
-
-### 2. Registrar uma ocorrência
-
-Em `POST /api/ocorrencias`, envie:
-
-```json
-{
-  "usuarioId": "11111111-1111-1111-1111-111111111111",
   "titulo": "Poste apagado próximo ao ponto de ônibus",
   "descricao": "A iluminação está apagada durante a noite.",
-  "cidade": "São Paulo",
-  "uf": "SP",
-  "bairro": "Chácara Klabin",
-  "localizacao": "Rua de demonstração, próximo ao número 100",
-  "categoria": "Iluminacao"
+  "cidade": "São Paulo", "uf": "SP", "bairro": "Chácara Klabin",
+  "localizacao": "Rua de demonstração, próximo ao número 100", "categoria": "Iluminacao"
 }
 ```
 
-Copie o `id` da ocorrência retornada. Ele é diferente do `usuarioId`.
+Entre com uma segunda conta para confirmar em `POST /api/ocorrencias/{id}/confirmacoes`, sem corpo. A própria ocorrência e uma confirmação repetida são recusadas.
 
-### 3. Atualizar o status
+No modo web com cookie, ferramentas HTTP também precisam enviar o cabeçalho `Origin` do frontend autorizado para escrever. No ambiente local, use `http://localhost:8081` ou `http://127.0.0.1:8081`. Não coloque tokens ou senhas no repositório.
 
-Em `PATCH /api/ocorrencias/{id}/status`, informe o ID da ocorrência na rota e envie:
+### Configuração fora do ambiente local
 
-```json
-{
-  "novoStatus": "EmAnalise",
-  "justificativa": "A associação iniciou a análise do registro."
-}
-```
-
-Consulte a ocorrência por ID para verificar a persistência do status e do histórico.
-
-### 4. Confirmar com outro morador
-
-Cadastre um segundo usuário. Em `POST /api/ocorrencias/{id}/confirmacoes`, envie o ID desse segundo usuário:
-
-```json
-{
-  "usuarioId": "22222222-2222-2222-2222-222222222222"
-}
-```
-
-Substitua o GUID ilustrativo pelo ID real. A primeira confirmação retorna `200`; repetir com o mesmo usuário retorna `400`. Utilizar o autor da ocorrência também retorna `400`.
+Use HTTPS e configure as origens exatas em `Frontend:Origins` (por exemplo, `Frontend__Origins__0` nas variáveis de ambiente). O cookie é `Secure` fora de Development. O frontend web e a API devem compartilhar o mesmo site para a política `SameSite=Lax`; um domínio de API completamente diferente exige rever essa configuração antes da publicação. O perfil Gestor precisa de provisionamento administrativo fora do cadastro público; não existe conta administrativa padrão.
 
 ## Testes e evidências de validação
 
@@ -240,9 +226,9 @@ Execute:
 dotnet test
 ```
 
-Na execução da atualização de localidades em 12/11/2026, os **32 testes passaram, sem falhas**, incluindo validação de UF/cidade, filtros em SQLite real e preservação dos registros antigos pela migration. A suíte cobre criação e validação de ocorrências, mudanças de status, histórico, encerramento, reabertura, confirmações e decisões de consulta/persistência dos serviços. Os testes de indicadores conferem os totais, o cenário vazio e o repasse do filtro de bairro.
+Na validação da autenticação, os **42 testes passaram, sem falhas**, incluindo validação de UF/cidade, filtros em SQLite real e preservação dos registros antigos pela migration. A suíte cobre criação e validação de ocorrências, mudanças de status, histórico, encerramento, reabertura, confirmações e decisões de consulta/persistência dos serviços. Os testes de indicadores conferem os totais, o cenário vazio e o repasse do filtro de bairro.
 
-Os testes de serviços utilizam repositórios simulados com Moq; não acessam um banco real.
+Os testes de serviços utilizam Moq. Os testes de integração de autenticação usam a API com WebApplicationFactory e SQLite em memória, cobrindo sessão, cookies, logout, expiração, autorização, confirmação repetida, identidade e limite de tentativas.
 
 Também foram executados manualmente pelo Scalar:
 
@@ -277,10 +263,6 @@ Os endpoints `GET /api/ocorrencias` e `GET /api/indicadores` aceitam `uf`, `cida
 
 Cidade e bairro são comparados pelo nome completo. A comparação SQLite `NOCASE` cobre diferenças de caixa em ASCII; não remove acentos nem unifica variantes de escrita. Use os mesmos acentos do cadastro. UF inválida retorna `400`. Novos cadastros e edições exigem `cidade` e `uf` no JSON. A atualização do seletor de localidades no Mobile será feita na etapa seguinte.
 
-## Integração Mobile e próximos passos
+## Integração Mobile
 
-O aplicativo Mobile será desenvolvido em Expo, React Native e TypeScript para consumir os endpoints desta API. A integração ainda não está implementada nesta versão.
-
-O protótipo atual não possui autenticação ou autorização por perfil. O cadastro de usuário identifica registros de demonstração e não constitui login. O papel de associação de moradores é parte do cenário proposto, sem restrição técnica de acesso às operações de acompanhamento nesta versão.
-
-A evolução prevê validação com moradores, interface acessível, autenticação e autorização e avaliação do impacto em uso real. A API atual é destinada à demonstração acadêmica em ambiente local.
+O app Expo/React Native consome as consultas públicas e a autenticação desta API, com login, cadastro, logout e confirmação de ocorrência. A preferência de tema fica separada da sessão. O formulário de criação de ocorrência no Mobile será a próxima etapa.
