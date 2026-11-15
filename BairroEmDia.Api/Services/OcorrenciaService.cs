@@ -103,6 +103,13 @@ public class OcorrenciaService : IOcorrenciaService
             .ToList();
     }
 
+    public async Task<IReadOnlyList<OcorrenciaResumoResponse>> ListarMinhasAsync(Guid usuarioId, CancellationToken cancellationToken = default)
+    {
+        var ocorrencias = await _ocorrenciaRepository.ListarPorUsuarioAsync(usuarioId, cancellationToken);
+        return ocorrencias.Select(o => new OcorrenciaResumoResponse(o.Id, o.Titulo, o.Bairro,
+            o.Cidade, o.Uf, o.Categoria, o.Status, o.CriadoEm, o.AtualizadoEm)).ToList();
+    }
+
     public async Task<OcorrenciaDetalheResponse> EditarAsync(
         Guid id,
         EditarOcorrenciaRequest request,

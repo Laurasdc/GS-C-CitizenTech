@@ -80,6 +80,15 @@ public class OcorrenciaRepository : IOcorrenciaRepository
             .ToListAsync(cancellationToken);
     }
 
+    public async Task<IReadOnlyList<Ocorrencia>> ListarPorUsuarioAsync(Guid usuarioId, CancellationToken cancellationToken = default)
+    {
+        return await _context.Ocorrencias.AsNoTracking()
+            .Where(o => o.UsuarioId == usuarioId)
+            .OrderByDescending(o => o.AtualizadoEm)
+            .ThenByDescending(o => o.CriadoEm)
+            .ToListAsync(cancellationToken);
+    }
+
     public async Task AdicionarAsync(
         Ocorrencia ocorrencia,
         CancellationToken cancellationToken = default)

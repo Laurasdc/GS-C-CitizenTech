@@ -36,7 +36,7 @@ public class AutenticacaoController(AutenticacaoService service, IAutenticacaoRe
         return Ok(sessao);
     }
     [HttpGet("me"), Authorize]
-    public IActionResult Me() => Ok(new ContaResponse(Guid.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!), User.Identity!.Name!, User.FindFirstValue(ClaimTypes.Email)!));
+    public IActionResult Me() => Ok(new ContaResponse(Guid.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!), User.Identity!.Name!, User.FindFirstValue(ClaimTypes.Email)!, User.FindFirstValue(ClaimTypes.Role)!));
     [HttpPost("sair"), Authorize]
     public async Task<IActionResult> Sair(CancellationToken ct)
     {

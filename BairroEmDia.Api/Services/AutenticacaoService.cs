@@ -39,6 +39,6 @@ public class AutenticacaoService(
         var token = Convert.ToHexString(RandomNumberGenerator.GetBytes(32));
         var expiraEm = time.GetUtcNow().UtcDateTime.AddHours(8);
         await repository.AdicionarSessaoAsync(new SessaoUsuario(usuario.Id, HashToken(token), expiraEm), ct);
-        return new SessaoResponse(new ContaResponse(usuario.Id, usuario.Nome, conta.Email), expiraEm, token);
+        return new SessaoResponse(new ContaResponse(usuario.Id, usuario.Nome, conta.Email, conta.Perfil), expiraEm, token);
     }
 }

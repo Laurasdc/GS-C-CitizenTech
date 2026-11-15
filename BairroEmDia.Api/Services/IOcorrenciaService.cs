@@ -21,6 +21,8 @@ public interface IOcorrenciaService
         string? uf = null,
         CancellationToken cancellationToken = default);
 
+    Task<IReadOnlyList<OcorrenciaResumoResponse>> ListarMinhasAsync(Guid usuarioId, CancellationToken cancellationToken = default);
+
     Task<OcorrenciaDetalheResponse> EditarAsync(
         Guid id,
         EditarOcorrenciaRequest request,

@@ -17,6 +17,8 @@ public interface IOcorrenciaRepository
         string? uf = null,
         CancellationToken cancellationToken = default);
 
+    Task<IReadOnlyList<Ocorrencia>> ListarPorUsuarioAsync(Guid usuarioId, CancellationToken cancellationToken = default);
+
     Task AdicionarAsync(
         Ocorrencia ocorrencia,
         CancellationToken cancellationToken = default);

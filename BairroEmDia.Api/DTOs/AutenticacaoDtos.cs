@@ -13,5 +13,5 @@ public class RegistrarContaRequest : EntrarRequest
     [Required(ErrorMessage = "Informe seu nome."), StringLength(100)]
     public string Nome { get; set; } = string.Empty;
 }
-public record ContaResponse(Guid Id, string Nome, string Email);
+public record ContaResponse(Guid Id, string Nome, string Email, string Perfil = "Morador");
 public record SessaoResponse(ContaResponse Usuario, DateTime ExpiraEm, string? Token = null);

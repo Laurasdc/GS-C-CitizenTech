@@ -79,6 +79,16 @@ public class OcorrenciasController : ControllerBase
     }
 
     [Authorize]
+    [HttpGet("minhas")]
+    [ResponseCache(NoStore = true, Location = ResponseCacheLocation.None)]
+    [ProducesResponseType(typeof(IReadOnlyList<OcorrenciaResumoResponse>), StatusCodes.Status200OK)]
+    public async Task<ActionResult<IReadOnlyList<OcorrenciaResumoResponse>>> Minhas(CancellationToken cancellationToken)
+    {
+        var usuarioId = Guid.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
+        return Ok(await _ocorrenciaService.ListarMinhasAsync(usuarioId, cancellationToken));
+    }
+
+    [Authorize]
     [HttpPut("{id:guid}")]
     [ProducesResponseType(
         typeof(OcorrenciaDetalheResponse),

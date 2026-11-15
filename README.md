@@ -177,6 +177,7 @@ Usuários antigos de demonstração continuam vinculados aos seus relatos, mas n
 | GET | `/api/auth/me` | Autenticado: consultar sua própria conta. |
 | POST | `/api/auth/sair` | Autenticado: revogar a sessão atual. |
 | GET | `/api/ocorrencias` | Público: listar e filtrar. |
+| GET | `/api/ocorrencias/minhas` | Autenticado: listar somente os relatos da sua conta. |
 | GET | `/api/ocorrencias/{id}` | Público: detalhes e histórico. |
 | POST | `/api/ocorrencias` | Autenticado: registrar em seu próprio nome. |
 | PUT | `/api/ocorrencias/{id}` | Autor ou Gestor: editar. |
@@ -226,7 +227,7 @@ Execute:
 dotnet test
 ```
 
-Na validação da autenticação, os **42 testes passaram, sem falhas**, incluindo validação de UF/cidade, filtros em SQLite real e preservação dos registros antigos pela migration. A suíte cobre criação e validação de ocorrências, mudanças de status, histórico, encerramento, reabertura, confirmações e decisões de consulta/persistência dos serviços. Os testes de indicadores conferem os totais, o cenário vazio e o repasse do filtro de bairro.
+Na validação da autenticação, os **48 testes passaram, sem falhas**, incluindo validação de UF/cidade, filtros em SQLite real e preservação dos registros antigos pela migration. A suíte cobre criação e validação de ocorrências, mudanças de status, histórico, encerramento, reabertura, confirmações e decisões de consulta/persistência dos serviços. Os testes de indicadores conferem os totais, o cenário vazio e o repasse do filtro de bairro.
 
 Os testes de serviços utilizam Moq. Os testes de integração de autenticação usam a API com WebApplicationFactory e SQLite em memória, cobrindo sessão, cookies, logout, expiração, autorização, confirmação repetida, identidade e limite de tentativas.
 
@@ -265,4 +266,32 @@ Cidade e bairro são comparados pelo nome completo. A comparação SQLite `NOCAS
 
 ## Integração Mobile
 
-O app Expo/React Native consome as consultas públicas e a autenticação desta API, com login, cadastro, logout e confirmação de ocorrência. A preferência de tema fica separada da sessão. O formulário de criação de ocorrência no Mobile será a próxima etapa.
+O app Expo/React Native consome as consultas públicas e a autenticação desta API, com login, cadastro, logout e confirmação de ocorrência. A preferência de tema fica separada da sessão. O Mobile também permite registrar problemas, consultar Meus relatos e editar ocorrências próprias ainda abertas.
+
+### Meus relatos e edição
+
+`GET /api/ocorrencias/minhas` usa exclusivamente a identidade da sessão, sem aceitar um usuário escolhido pelo cliente. A resposta usa o resumo existente, não expõe identificadores de autores e não deve ser armazenada em cache. A ordenação considera a atualização mais recente e, em seguida, a criação.
+
+A edição usa o `PUT /api/ocorrencias/{id}` existente. A API verifica autor/perfil e bloqueia ocorrências encerradas. Editar os dados não altera autor, situação, data de criação, confirmações ou histórico. Os testes de integração conferem isolamento entre contas, ausência de sessão, parâmetros de identidade forjados, preservação dos dados e bloqueio após encerramento. Esta atualização não exige nova migration.
+
+### Habilitar uma conta de gestor
+
+Primeiro, cadastre a conta normalmente pelo app. O cadastro público sempre cria **Morador**, mesmo que alguém envie um campo de perfil por conta própria. Não existe senha administrativa padrão nem endpoint público para promover contas.
+
+Pare a API e, na raiz da solução, execute com o e-mail da conta cadastrada:
+
+```powershell
+dotnet run --project BairroEmDia.Api --launch-profile http -- --definir-gestor "seu-email@example.com"
+```
+
+O comando usa a mesma configuração/conexão da API, promove somente a conta existente e revoga suas sessões. Ele termina sem iniciar servidor HTTP. Se o e-mail não existir, informa o problema e retorna código 1 sem criar conta. Não passe a senha nesse comando. Em outro ambiente, use a conexão daquele ambiente; a promoção no banco local não altera o servidor publicado.
+
+Depois, inicie a API normalmente e entre novamente no app:
+
+```powershell
+dotnet run --project BairroEmDia.Api --launch-profile http
+```
+
+Login e `/api/auth/me` retornam o campo `perfil`. No Mobile/web, use **Conta → Gerenciar ocorrências**. O `PATCH /api/ocorrencias/{id}/status` continua exigindo **Gestor** no servidor, independentemente do que a interface apresenta. A justificativa é obrigatória e tem até 1.000 caracteres. Uma ocorrência encerrada só pode ser reaberta como **Em análise**.
+
+Os testes de integração também verificam promoção local, revogação das sessões anteriores, perfil forjado no cadastro, publicação do histórico, justificativa vazia/longa, repetição da situação e reabertura. Não há nova migration nesta etapa.

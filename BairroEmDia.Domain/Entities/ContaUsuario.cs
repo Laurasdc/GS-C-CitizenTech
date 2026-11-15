@@ -6,6 +6,8 @@ public class ContaUsuario
     public string Email { get; private set; } = string.Empty;
     public string SenhaHash { get; private set; } = string.Empty;
     public string Perfil { get; private set; } = "Morador";
+    public void PromoverParaGestor() => Perfil = "Gestor";
+
     private ContaUsuario() { }
     public ContaUsuario(Guid usuarioId, string email, string senhaHash)
     {
