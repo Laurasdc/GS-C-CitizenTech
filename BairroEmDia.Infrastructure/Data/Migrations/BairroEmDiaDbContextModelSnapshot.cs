@@ -169,6 +169,38 @@ namespace BairroEmDia.Infrastructure.Data.Migrations
                     b.ToTable("Ocorrencias", (string)null);
                 });
 
+            modelBuilder.Entity("BairroEmDia.Domain.Entities.RecuperacaoSenha", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTime>("CriadoEm")
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTime>("ExpiraEm")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("TokenHash")
+                        .IsRequired()
+                        .HasMaxLength(64)
+                        .HasColumnType("TEXT");
+
+                    b.Property<Guid>("UsuarioId")
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ExpiraEm");
+
+                    b.HasIndex("TokenHash")
+                        .IsUnique();
+
+                    b.HasIndex("UsuarioId")
+                        .IsUnique();
+
+                    b.ToTable("RecuperacoesSenha", (string)null);
+                });
+
             modelBuilder.Entity("BairroEmDia.Domain.Entities.SessaoUsuario", b =>
                 {
                     b.Property<Guid>("Id")
@@ -254,6 +286,15 @@ namespace BairroEmDia.Infrastructure.Data.Migrations
                         .WithMany()
                         .HasForeignKey("UsuarioId")
                         .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("BairroEmDia.Domain.Entities.RecuperacaoSenha", b =>
+                {
+                    b.HasOne("BairroEmDia.Domain.Entities.ContaUsuario", null)
+                        .WithMany()
+                        .HasForeignKey("UsuarioId")
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });
 

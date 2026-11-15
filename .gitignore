@@ -485,3 +485,6 @@ $RECYCLE.BIN/
 *.db
 *.db-shm
 *.db-wal
+
+# Mensagens locais de recuperação contêm links privados
+**/App_Data/

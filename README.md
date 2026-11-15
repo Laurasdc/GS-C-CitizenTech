@@ -164,7 +164,7 @@ A consulta de ocorrências, detalhes e indicadores é pública. Para participar,
 - Requisições de escrita com cookie exigem uma origem autorizada; o CORS permite credenciais somente para origens explícitas.
 - O autor da ocorrência e da confirmação vem da sessão. Enviar outro `usuarioId` não altera a identidade.
 - Cadastros públicos recebem o perfil `Morador`. Edição é permitida ao autor ou Gestor. Alteração de status e gestão de usuários exigem `Gestor`.
-- O app não tem promoção pública de perfil, recuperação de senha, verificação de e-mail ou login social nesta etapa.
+- O app não tem promoção pública de perfil, verificação de e-mail ou login social. Recuperação de senha não faz parte da versão atual.
 
 Usuários antigos de demonstração continuam vinculados aos seus relatos, mas não ganham senhas automaticamente. Crie uma conta nova pelo app. Não existe senha padrão.
 
@@ -295,3 +295,11 @@ dotnet run --project BairroEmDia.Api --launch-profile http
 Login e `/api/auth/me` retornam o campo `perfil`. No Mobile/web, use **Conta → Gerenciar ocorrências**. O `PATCH /api/ocorrencias/{id}/status` continua exigindo **Gestor** no servidor, independentemente do que a interface apresenta. A justificativa é obrigatória e tem até 1.000 caracteres. Uma ocorrência encerrada só pode ser reaberta como **Em análise**.
 
 Os testes de integração também verificam promoção local, revogação das sessões anteriores, perfil forjado no cadastro, publicação do histórico, justificativa vazia/longa, repetição da situação e reabertura. Não há nova migration nesta etapa.
+
+## Escopo de autenticação
+
+A versão atual tem cadastro, login e logout. A recuperação de senha e o envio de e-mail foram retirados. Não há endpoints públicos de solicitação ou redefinição de senha.
+
+A migration `AdicionaRecuperacaoSenha`, seu mapeamento e a tabela histórica permanecem para manter compatibilidade com bancos onde a migration já foi aplicada. Nenhum serviço ou endpoint utiliza essa tabela. Não reverta migrations nem apague o banco para aplicar esta remoção. Contas, senhas e relatos atuais são preservados.
+
+Arquivos antigos de e-mail local, caso existam em `BairroEmDia.Api/App_Data/emails`, continuam ignorados pelo Git. A API não gera novas mensagens e não usa a configuração SMTP antiga.

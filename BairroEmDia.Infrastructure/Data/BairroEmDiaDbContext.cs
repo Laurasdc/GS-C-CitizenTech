@@ -11,6 +11,8 @@ public class BairroEmDiaDbContext : DbContext
     {
     }
 
+    public DbSet<RecuperacaoSenha> RecuperacoesSenha => Set<RecuperacaoSenha>();
+
     public DbSet<ContaUsuario> ContasUsuario => Set<ContaUsuario>();
     public DbSet<SessaoUsuario> SessoesUsuario => Set<SessaoUsuario>();
 
@@ -24,6 +26,18 @@ public class BairroEmDiaDbContext : DbContext
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         base.OnModelCreating(modelBuilder);
+
+        modelBuilder.Entity<RecuperacaoSenha>(entity =>
+        {
+            entity.ToTable("RecuperacoesSenha");
+            entity.HasKey(r => r.Id);
+            entity.Property(r => r.Id).ValueGeneratedNever();
+            entity.Property(r => r.TokenHash).IsRequired().HasMaxLength(64);
+            entity.HasIndex(r => r.TokenHash).IsUnique();
+            entity.HasIndex(r => r.UsuarioId).IsUnique();
+            entity.HasIndex(r => r.ExpiraEm);
+            entity.HasOne<ContaUsuario>().WithMany().HasForeignKey(r => r.UsuarioId).OnDelete(DeleteBehavior.Cascade);
+        });
 
         modelBuilder.Entity<ContaUsuario>(entity =>
         {
