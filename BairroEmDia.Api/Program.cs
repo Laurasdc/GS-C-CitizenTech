@@ -65,6 +65,13 @@ builder.Services.AddCors(options => options.AddPolicy("Frontend", policy =>
 
 var app = builder.Build();
 
+// Redefinição administrativa local: não abre endpoints HTTP.
+if (builder.Configuration["redefinir-senha"] is string emailSenha)
+{
+    Environment.ExitCode = await RedefinirSenhaLocal.ExecutarAsync(app.Services, emailSenha);
+    return;
+}
+
 // Operação administrativa local: termina sem abrir um servidor HTTP.
 if (builder.Configuration["definir-gestor"] is string emailGestor)
 {
