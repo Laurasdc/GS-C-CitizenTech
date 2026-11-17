@@ -167,9 +167,11 @@ Ou usando a imagem Maven do Docker, a partir de `soa-integracao`:
 docker run --rm -v "${PWD}/soa:/workspace" -w /workspace maven:3.9.9-eclipse-temurin-21 mvn test
 ```
 
-Os testes cobrem o contrato HTTP com C#, filtros acentuados, falhas de conexão, contagens, validação dos endpoints, migração Flyway e gravação/leitura no banco de testes H2 em modo PostgreSQL. A execução no PostgreSQL real deve ser conferida com o Compose e o script acima.
+Os testes cobrem o contrato HTTP com C#, filtros acentuados, falhas de conexão, contagens, validação dos endpoints, migração Flyway e gravação/leitura no banco de testes H2 em modo PostgreSQL. A conferência com a API C# real e PostgreSQL no computador da equipe está registrada nas [evidências](../docs/EVIDENCIAS.md).
 
 ## Evidências da integração
+
+[Veja os prints da integração e da migração aplicadas pela equipe](../docs/EVIDENCIAS.md). Os comandos abaixo permitem reproduzir a conferência.
 
 1. Com as duas APIs ativas, execute o script e salve a saída com as contagens conferidas.
 2. Capture o POST e o GET da análise no Swagger, mostrando seu ID e as contagens.
