@@ -1,0 +1,32 @@
+services:
+  postgres-soa:
+    image: postgres:16
+    environment:
+      POSTGRES_DB: bairroemdia_soa_integracao
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    ports:
+      - "127.0.0.1:5433:5432"
+    volumes:
+      - analises_soa_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d bairroemdia_soa_integracao"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+  soa:
+    build: ./soa
+    environment:
+      DB_URL: jdbc:postgresql://postgres-soa:5432/bairroemdia_soa_integracao
+      DB_USER: postgres
+      DB_PASSWORD: postgres
+      CSHARP_API_URL: http://host.docker.internal:5239
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    ports:
+      - "127.0.0.1:8080:8080"
+    depends_on:
+      postgres-soa:
+        condition: service_healthy
+volumes:
+  analises_soa_data:

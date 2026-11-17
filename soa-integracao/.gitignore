@@ -1,0 +1,4 @@
+soa/target/
+.idea/
+.env
+*.log
